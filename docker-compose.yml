@@ -9,7 +9,7 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
-      - /config:/mnt/user/appdata/getting-started
+      - /mnt/user/appdata/getting-started:/config
     environment:
       MYSQL_HOST: mysql
       MYSQL_USER: root
