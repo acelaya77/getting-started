@@ -1,10 +1,11 @@
 ﻿# syntax=docker/dockerfile:1
-   
-FROM node:20-alpine3.22
-USER nonroot
+
+FROM node:24-alpine3.22
 WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --production --frozen-lockfile
 COPY . .
-#COPY package.json yarn.lock ./
-RUN yarn install --production
-CMD ["node", "src/index.js"]
+RUN chown -R node:node /app
+USER node
 EXPOSE 3000
+CMD ["node", "src/index.js"]
