@@ -2,7 +2,7 @@
 
 FROM node:24-alpine3.22
 WORKDIR /app
-COPY package.json yarn.lock ./
+COPY package.json ./
 RUN yarn install --production --frozen-lockfile
 COPY . .
 RUN chown -R node:node /app

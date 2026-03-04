@@ -1,5 +1,12 @@
-const db = require('../../src/persistence/sqlite');
-const fs = require('fs');
+import {
+    init,
+    storeItem,
+    getItems,
+    updateItem,
+    removeItem,
+    getItem,
+} from '../../src/persistence/sqlite';
+import { existsSync, unlinkSync } from 'fs';
 
 const ITEM = {
     id: '7aef3d7c-d301-4846-8358-2a91ec9d6be3',
@@ -8,57 +15,57 @@ const ITEM = {
 };
 
 beforeEach(() => {
-    if (fs.existsSync('/etc/todos/todo.db')) {
-        fs.unlinkSync('/etc/todos/todo.db');
+    if (existsSync('/etc/todos/todo.db')) {
+        unlinkSync('/etc/todos/todo.db');
     }
 });
 
 test('it initializes correctly', async () => {
-    await db.init();
+    await init();
 });
 
 test('it can store and retrieve items', async () => {
-    await db.init();
+    await init();
 
-    await db.storeItem(ITEM);
+    await storeItem(ITEM);
 
-    const items = await db.getItems();
+    const items = await getItems();
     expect(items.length).toBe(1);
     expect(items[0]).toEqual(ITEM);
 });
 
 test('it can update an existing item', async () => {
-    await db.init();
+    await init();
 
-    const initialItems = await db.getItems();
+    const initialItems = await getItems();
     expect(initialItems.length).toBe(0);
 
-    await db.storeItem(ITEM);
+    await storeItem(ITEM);
 
-    await db.updateItem(
+    await updateItem(
         ITEM.id,
         Object.assign({}, ITEM, { completed: !ITEM.completed }),
     );
 
-    const items = await db.getItems();
+    const items = await getItems();
     expect(items.length).toBe(1);
     expect(items[0].completed).toBe(!ITEM.completed);
 });
 
 test('it can remove an existing item', async () => {
-    await db.init();
-    await db.storeItem(ITEM);
+    await init();
+    await storeItem(ITEM);
 
-    await db.removeItem(ITEM.id);
+    await removeItem(ITEM.id);
 
-    const items = await db.getItems();
+    const items = await getItems();
     expect(items.length).toBe(0);
 });
 
 test('it can get a single item', async () => {
-    await db.init();
-    await db.storeItem(ITEM);
+    await init();
+    await storeItem(ITEM);
 
-    const item = await db.getItem(ITEM.id);
+    const item = await getItem(ITEM.id);
     expect(item).toEqual(ITEM);
 });
