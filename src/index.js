@@ -1,13 +1,23 @@
 import express, { json, static as expressStatic } from 'express';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// 1. Replicate __dirname for ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
-import { init, teardown } from './persistence';
-import getItems from './routes/getItems';
-import addItem from './routes/addItem';
-import updateItem from './routes/updateItem';
-import deleteItem from './routes/deleteItem';
+
+// 2. Add .js extensions to all local imports
+import { init, teardown } from './persistence/index.js';
+import getItems from './routes/getItems.js';
+import addItem from './routes/addItem.js';
+import updateItem from './routes/updateItem.js';
+import deleteItem from './routes/deleteItem.js';
 
 app.use(json());
-app.use(expressStatic(__dirname + '/static'));
+// Use join() for cleaner path resolution
+app.use(expressStatic(join(__dirname, 'static')));
 
 app.get('/items', getItems);
 app.post('/items', addItem);
@@ -31,4 +41,4 @@ const gracefulShutdown = () => {
 
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
-process.on('SIGUSR2', gracefulShutdown); // Sent by nodemon
+process.on('SIGUSR2', gracefulShutdown);
